@@ -21,6 +21,11 @@ func TestParse(t *testing.T) {
 			expectedNum: 4437990238,
 			region:      "US",
 		}, {
+			input:       "+244972577111",
+			err:         nil,
+			expectedNum: 972577111,
+			region:      "AO",
+		}, {
 			input:       "(443) 799-0238",
 			err:         nil,
 			expectedNum: 4437990238,
@@ -55,12 +60,6 @@ func TestParse(t *testing.T) {
 			err:         nil,
 			expectedNum: 7856952,
 			region:      "",
-		},
-		{
-			input:       "+212701035628",
-			err:         nil,
-			expectedNum: 701035628,
-			region:      "MA",
 		},
 	}
 
@@ -198,6 +197,11 @@ func Test_IsValidNumber(t *testing.T) {
 			isValid: true,
 			region:  "US",
 		}, {
+			input:   "+244972577111",
+			err:     nil,
+			isValid: true,
+			region:  "US",
+		}, {
 			input:   "(443) 799-0238",
 			err:     nil,
 			isValid: true,
@@ -232,18 +236,47 @@ func Test_IsValidNumber(t *testing.T) {
 			err:     nil,
 			isValid: true,
 			region:  "BS",
-		},
-		{
-			input:   "+212701035628",
+		}, {
+			input:   "+8619510517228",
 			err:     nil,
 			isValid: true,
-			region:  "MA",
-		},
-		{
-			input:   "+213562035421",
+			region:  "CN",
+		}, {
+			input:   "+8619610517228",
 			err:     nil,
 			isValid: true,
-			region:  "MA",
+			region:  "CN",
+		}, {
+			input:   "+8619010517228",
+			err:     nil,
+			isValid: true,
+			region:  "CN",
+		}, {
+			input:   "+8619310517228",
+			err:     nil,
+			isValid: true,
+			region:  "CN",
+		}, {
+			input:   "+8614610517228",
+			err:     nil,
+			isValid: false,
+			region:  "CN",
+		}, {
+			input:   "+8614810517228",
+			err:     nil,
+			isValid: false,
+			region:  "CN",
+		}, {
+			input:   "+8614910517228",
+			err:     nil,
+			isValid: false,
+			region:  "CN",
+		},
+		{
+			input:   "+19453014999",
+			err:     nil,
+			isValid: true,
+			region:  "US",
 		},
 	}
 
@@ -256,8 +289,8 @@ func Test_IsValidNumber(t *testing.T) {
 			continue
 		}
 		if IsValidNumber(num) != test.isValid {
-			t.Errorf("[test %d:validity] failed: %v != %v\n",
-				i, IsValidNumber(num), test.isValid)
+			t.Errorf("[test %d (%s):validity] failed: %v != %v\n",
+				i, test.input, IsValidNumber(num), test.isValid)
 		}
 	}
 }
@@ -583,7 +616,7 @@ func Test_getMetadata(t *testing.T) {
 			cc:         1,
 			i18nPref:   "011",
 			natPref:    "1",
-			numFmtSize: 2,
+			numFmtSize: 3,
 		}, {
 			name:       "DE",
 			id:         "DE",
