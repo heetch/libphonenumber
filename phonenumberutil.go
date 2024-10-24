@@ -396,6 +396,8 @@ var (
 	FIRST_GROUP_ONLY_PREFIX_PATTERN = regexp.MustCompile("\\(?\\$1\\)?")
 
 	REGION_CODE_FOR_NON_GEO_ENTITY = "001"
+
+	MaliNationalPhoneRegExp = regexp.MustCompile("^(?:2(?:0(?:01|79)|17\\d)\\d{4}|(?:5[01]|[6789]\\d|8[2-49])\\d{6})$")
 )
 
 // INTERNATIONAL and NATIONAL formats are consistent with the definition
@@ -2159,7 +2161,19 @@ func isNumberMatchingDesc(nationalNumber string, numberDesc *PhoneNumberDesc) bo
 // just looking at a number itself.
 func IsValidNumber(number *PhoneNumber) bool {
 	var regionCode string = GetRegionCodeForNumber(number)
-	return IsValidNumberForRegion(number, regionCode)
+	isValid := IsValidNumberForRegion(number, regionCode)
+	// Mali raised new phone number prefix 85 which is still not supported by the latest version
+	// of libphonenumber. So we need to validate it manually.
+	if regionCode == "ML" {
+		return validateNewMaliPrefix(number)
+	}
+
+	return isValid
+}
+
+func validateNewMaliPrefix(number *PhoneNumber) bool {
+	var nationalSignificantNumber = GetNationalSignificantNumber(number)
+	return MaliNationalPhoneRegExp.Match([]byte(nationalSignificantNumber))
 }
 
 // Tests whether a phone number is valid for a certain region. Note this
